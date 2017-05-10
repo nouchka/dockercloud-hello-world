@@ -1,11 +1,7 @@
-FROM alpine:3.4
+FROM nouchka/symfony:7.0
 
-RUN apk --update add nginx php5-fpm && \
-    mkdir -p /run/nginx
+COPY www/ /var/www/html/
 
-ADD www /www
-ADD nginx.conf /etc/nginx/
-ADD php-fpm.conf /etc/php5/php-fpm.conf
+RUN rm -rf /var/www/html/index.html
 
-EXPOSE 80
-CMD php-fpm -d variables_order="EGPCS" && exec nginx -g "daemon off;"
+RUN echo "export HOSTNAME=`hostname`" >> /etc/apache2/envvars

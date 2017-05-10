@@ -18,7 +18,7 @@
 <body>
 	<img id="logo" src="logo.png" />
 	<h1><?php echo "Hello ".($_ENV["NAME"]?$_ENV["NAME"]:"world")."!"; ?></h1>
-	<?php if($_ENV["HOSTNAME"]) {?><h3>My hostname is <?php echo $_ENV["HOSTNAME"]; ?></h3><?php } ?>
+	<?php if(getenv('HOSTNAME')) {?><h3>My hostname is <?php echo getenv('HOSTNAME'); ?></h3><?php } ?>
 	<?php
 	$links = [];
 	foreach($_ENV as $key => $value) {
@@ -40,15 +40,19 @@
 			<b><?php echo $link["name"]; ?></b> listening in <?php echo $link["port"]+"/"+$link["proto"]; ?> available at <?php echo $link["value"]; ?><br />
 			<?php
 		}
-		?>
+	}
+	?>
+	<h3>Redis</h3>
 	<?php
-	}
-
-	if($_ENV["DOCKERCLOUD_AUTH"]) {
-		?>
-		<h3>I have Docker Cloud API powers!</h3>
-		<?php
-	}
+	$redis = new Redis(); 
+	$redis->connect('redis', 6379);
+	echo "<p>Connection to server sucessfully</p>";
+	$key = "counter";
+	$counter = $redis->get($key);
+	if (!isset($counter)) {$counter = 0;}
+	echo "<p>Counter ".$redis->get($key)."</p>";
+	$counter++;
+	$counter = $redis->set($key, $counter);
 	?>
 </body>
 </html>
